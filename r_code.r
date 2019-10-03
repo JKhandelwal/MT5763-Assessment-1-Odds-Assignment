@@ -191,8 +191,8 @@ for (i in (1:4)){
   print(paste("Competitor ", toString(filt_runner_list[i])))
   print("--------------------")
 #   # !±!!!!!!!!!!!!!!!!!!!!!!! TODO UNCOMMENT ALL PLOTS
-  plot_odds(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE"))
-  plot_volumes(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE"))
+  plot_odds(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
+  plot_volumes(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
 #
   up_to_fifteen <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" & selectionId == filt_runner_list[i] & seconds_time < (start_time - 15*60)))
   fifteen_to_five <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 15*60) & seconds_time < (start_time - 5*60)))
