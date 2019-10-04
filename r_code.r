@@ -64,9 +64,11 @@ plot_odds <- function(df){
   # Give the chart file a name.
   png(file = paste("Back_and_lay_odds", toString(unique(df$selectionId)),".jpg"))
   # Plot the bar chart.
-  plot(df$seconds_time, df$bckPrc1,type = "o",col = "red", xlab = "Time", ylab = "Odds",
+  plot(df$seconds_time, df$bckPrc1,type = "l",col = "blue", xlab = "Time in seconds since betting start", ylab = "Odds",
      main = paste("Back and Lay Odds For Competitor ", toString(unique(df$selectionId))))
-  lines(df$seconds_time, df$layPrc1, type = "o", col = "blue")
+  lines(df$seconds_time, df$layPrc1, type = "l", col = "red")
+  legend("top", legend=c("Backing Odds", "Laying Odds"),
+       col=c("blue", "red"), lty=1:1, cex=0.8)
   # Save the file.
   dev.off()
 }
@@ -75,9 +77,11 @@ plot_volumes <- function(df){
     # Give the chart file a name.
     png(file = paste("Back_and_lay_volumes", toString(unique(df$selectionId)),".jpg"))
     # Plot the bar chart.
-    plot(df$seconds_time, df$bckSz1,type = "o",col = "red", xlab = "Time", ylab = "Volumes",
+    plot(df$seconds_time, df$bckSz1,type = "l",col = "red", xlab = "Time in seconds since betting start", ylab = "Volumes",
        main = paste("Back and Lay Volumes For Competitor ", toString(unique(df$selectionId))))
-    lines(df$seconds_time, df$laySz1, type = "o", col = "blue")
+    lines(df$seconds_time, df$laySz1, type = "l", col = "blue")
+    legend("top", legend=c("Backing Volumes", "Laying Volumes"),
+         col=c("blue", "red"), lty=1:1, cex=0.8)
     # Save the file.
     dev.off()
 }
@@ -92,7 +96,8 @@ mean_variance <- function(df){
 
 plot_distribution <- function(df){
   png(file = paste("Backing Distribution from 5 minutes before to start", toString(unique(df$selectionId)),".jpg"))
-  hist(df$bckPrc1, main = paste("Backing Distribution from 5 minutes before to start", toString(unique(df$selectionId))))
+  hist(df$bckPrc1, xlab="Backing Odds", ylab="Frequency of Odds", , col="blue", border="black", prob = TRUE,
+      main = paste("Backing Distribution from 5 minutes before to start \n For competitor", toString(unique(df$selectionId))))
   dev.off()
 }
 
@@ -191,32 +196,32 @@ for (i in (1:4)){
   print(paste("Competitor ", toString(filt_runner_list[i])))
   print("--------------------")
 #   # !±!!!!!!!!!!!!!!!!!!!!!!! TODO UNCOMMENT ALL PLOTS
-  plot_odds(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
-  plot_volumes(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
+  # plot_odds(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
+  # plot_volumes(filter(filt_runner_data, selectionId == filt_runner_list[i] & inplay == "FALSE" & marketStatus != "SUSPENDED"))
 #
-  up_to_fifteen <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" & selectionId == filt_runner_list[i] & seconds_time < (start_time - 15*60)))
-  fifteen_to_five <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 15*60) & seconds_time < (start_time - 5*60)))
-  five_to_start <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 5*60) & seconds_time < start_time ))
+#   up_to_fifteen <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" & selectionId == filt_runner_list[i] & seconds_time < (start_time - 15*60)))
+#   fifteen_to_five <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 15*60) & seconds_time < (start_time - 5*60)))
+#   five_to_start <- mean_variance(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 5*60) & seconds_time < start_time ))
+# #
+#   mean_variance_df <- setNames(data.frame(matrix(ncol = 4, nrow = 0)), c("Mean_Backing","Mean_Lay", "Variance_Backing", "Variance_Lay"))
+#   mean_variance_df[nrow(mean_variance_df) + 1,] <- up_to_fifteen
+#   mean_variance_df[nrow(mean_variance_df) + 1,] <- fifteen_to_five
+#   mean_variance_df[nrow(mean_variance_df) + 1,] <- five_to_start
 #
-  mean_variance_df <- setNames(data.frame(matrix(ncol = 4, nrow = 0)), c("Mean_Backing","Mean_Lay", "Variance_Backing", "Variance_Lay"))
-  mean_variance_df[nrow(mean_variance_df) + 1,] <- up_to_fifteen
-  mean_variance_df[nrow(mean_variance_df) + 1,] <- fifteen_to_five
-  mean_variance_df[nrow(mean_variance_df) + 1,] <- five_to_start
-
-  # Print out the Mean_Variance
-  print(mean_variance_df)
-
+#   # Print out the Mean_Variance
+#   print(mean_variance_df)
+#
   plot_distribution(filter(filt_runner_data, marketStatus != "SUSPENDED" &  selectionId == filt_runner_list[i] & seconds_time >= (start_time - 5*60) & seconds_time < start_time))
 }
 
-merged <- build_and_merge(filt_runner_list, winner_ID, filt_runner_data)
-print("Merged Data")
-print(head(merged))
+# merged <- build_and_merge(filt_runner_list, winner_ID, filt_runner_data)
+# print("Merged Data")
+# print(head(merged))
 
 # Arbitrage
-print("Arbitrage Position")
-print(arbitrage(filter(filt_runner_data, selectionId == winner_ID & inplay == FALSE)))
+# print("Arbitrage Position")
+# print(arbitrage(filter(filt_runner_data, selectionId == winner_ID & inplay == FALSE)))
 
 # Excel Long Wide
-print("Reshaping Data")
-reshape(filter(filt_runner_data, selectionId %in% filt_runner_list & marketStatus != "SUSPENDED"))
+# print("Reshaping Data")
+# reshape(filter(filt_runner_data, selectionId %in% filt_runner_list & marketStatus != "SUSPENDED"))
